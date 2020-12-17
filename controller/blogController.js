@@ -3,16 +3,7 @@ const path = require("path");
 
 const blogs = path.join(__dirname, "..", "data", "blogs.json");
 const blogData = JSON.parse(fs.readFileSync(blogs, "utf-8"));
-
-const getAllBlogs = (req, res) => {
-	console.log(blogData);
-	res.status(200).json({
-		status: "successful",
-		data: blogData,
-	});
-};
-
-const getBlogById = (req, res) => {
+const getblogById = (req, res) => {
 	let blog = blogData.find((blog) => {
 		return blog.id === req.params.id;
 	});
@@ -28,8 +19,47 @@ const getBlogById = (req, res) => {
 		});
 	}
 };
+const getAllBlogs = (req, res) => {
+	console.log(req.query);
+	if (req.query) {
+		let blog = blogData.filter((blog) => {
+			return Object.keys(req.query).every((key) => {
+				blog[key] = blog[key]
+					.trim()
+					.replace(/[_-\s]/g, "")
+					.toLowerCase();
+
+				req.query[key] = req.query[key]
+					.trim()
+					.replace(/[_-\s]/g, "")
+					.toLowerCase();
+
+				if (blog[key].includes(req.query[key])) {
+					return blog[key];
+				}
+			});
+		});
+
+		if (blog < 1) {
+			res.status(404).json({
+				status: "Unsuccessful",
+				data: "Blog not found",
+			});
+		} else {
+			res.status(200).json({
+				status: "Successful",
+				data: blog,
+			});
+		}
+	} else {
+		res.status(200).json({
+			status: "Successful",
+			data: blogData,
+		});
+	}
+};
 
 module.exports = {
+	getblogById,
 	getAllBlogs,
-	getBlogById,
 };

@@ -1,18 +1,12 @@
 const express = require("express");
 const dotenv = require("dotenv");
-const blogRoute = require("./routes/blogRoute.js");
-
+const blogRoute = require("./routes/blogRoutes.js");
 dotenv.config({
 	path: `${__dirname}/config.env`,
 });
-
 const app = express();
-
 app.use(express.json());
-
-// get all the blogs
 app.use("/blogs", blogRoute);
-
 app.listen(process.env.PORT, () => {
-	console.log(`Server is listening on PORT : ${process.env.PORT}`);
+	console.log(`Server started at PORT ${process.env.PORT}`);
 });
